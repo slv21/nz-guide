@@ -215,6 +215,11 @@ details.thing[open] summary::after { transform: rotate(-135deg); top: 20px; }
 .td p { margin: 0 0 8px; }
 .td .tip { color: var(--muted); font-size: 13.5px; }
 .td .tip::before { content: "Tip: "; font-weight: 600; color: var(--ink); }
+.td .links { display: flex; gap: 16px; margin: 4px 0 0; font-size: 13.5px; }
+a { color: var(--accent); text-underline-offset: 2px; }
+.td .links a { font-weight: 500; text-decoration: none; }
+.td .links a:hover, .maplink:hover { text-decoration: underline; }
+.maplink { display: block; margin-top: 4px; font-weight: 500; text-decoration: none; }
 .pn { display: flex; justify-content: space-between; gap: 10px; margin-top: 22px; }
 .pn button {
   flex: 1; border: 1px solid var(--line); background: none; border-radius: 12px; padding: 10px 12px; cursor: pointer; text-align: left;
@@ -331,6 +336,7 @@ details.thing[open] summary::after { transform: rotate(-135deg); top: 20px; }
     return e;
   };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const mapUrl = q => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q + ', New Zealand');
   const line = pts => 'M' + pts.map(p => P(p).map(v => v.toFixed(1)).join(',')).join('L');
 
   const svg = $('#map'), wrap = $('#mapwrap'), panel = $('#panel'), body = $('#panelBody');
@@ -611,7 +617,8 @@ details.thing[open] summary::after { transform: rotate(-135deg); top: 20px; }
       <p class="eyebrow">${island}${i < 0 && id !== 'auckland' ? ' · Detour' : ''}</p>
       <h2>${esc(p.name)}</h2>${p.maori ? `<p class="maori">${esc(p.maori)}</p>` : ''}
       <p class="blurb">${esc(p.blurb)}</p>
-      <dl class="meta"><div><dt>How long</dt><dd>${esc(p.stay)}</dd></div><div><dt>Getting there</dt><dd>${esc(p.getting)}</dd></div></dl>
+      <dl class="meta"><div><dt>How long</dt><dd>${esc(p.stay)}</dd></div><div><dt>Getting there</dt><dd>${esc(p.getting)}
+        <a class="maplink" href="${mapUrl(p.name)}" target="_blank" rel="noopener">Open in Google Maps ↗</a></dd></div></dl>
       ${p.tip ? `<p class="note-box">${esc(p.tip)}</p>` : ''}
       <h3 class="sub" style="margin-top:4px">Things to do</h3>
       ${hasPicks ? `<label class="filter"><input type="checkbox" id="picks" ${picksOnly ? 'checked' : ''}> Only show Stefan's picks</label>` : ''}
@@ -623,7 +630,8 @@ details.thing[open] summary::after { transform: rotate(-135deg); top: 20px; }
             ${t.book ? '<span class="badge book">Book ahead</span>' : ''}
             ${t.wx ? '<span class="badge wx">Weather-dependent</span>' : ''}
             <span class="tt">${esc(t.t || '')}</span></summary>
-          <div class="td"><p>${esc(t.d)}</p>${t.tip ? `<p class="tip">${esc(t.tip)}</p>` : ''}</div>
+          <div class="td"><p>${esc(t.d)}</p>${t.tip ? `<p class="tip">${esc(t.tip)}</p>` : ''}
+            ${t.url || !t.nomap ? `<p class="links">${t.url ? `<a href="${esc(t.url)}" target="_blank" rel="noopener">Website ↗</a>` : ''}${t.nomap ? '' : `<a href="${mapUrl(t.q || t.n + ', ' + p.name)}" target="_blank" rel="noopener">Map ↗</a>`}</p>` : ''}</div>
         </details>`).join('')}</div>
       ${prev || next ? `<nav class="pn">
         ${prev ? `<button data-id="${prev}"><small>← Previous</small><span>${esc(byId[prev].name)}</span></button>` : '<span></span>'}
