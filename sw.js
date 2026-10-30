@@ -1,6 +1,6 @@
 // Keeps the guide working offline: serve from cache, refresh in the background.
-const CACHE = 'nz-guide-v1';
-const FILES = ['./', 'index.html', 'data.js', 'manifest.webmanifest', 'icon.svg'];
+const CACHE = 'nz-guide-v2';
+const FILES = ['./', 'index.html', 'data.js', 'app.js', 'manifest.webmanifest', 'icon.svg'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))));
