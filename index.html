@@ -397,8 +397,11 @@ a { color: var(--accent); text-underline-offset: 2px; }
   roadSet.forEach(nodes => el('path', { d: line(nodes.map(n => NODES[n])) }, $('#roads')));
 
   // The flight from Auckland down to Christchurch
-  const [ax, ay] = P(byId.auckland.at), [cx, cy] = P(byId.christchurch.at);
-  const flightPath = el('path', { d: `M${ax},${ay} Q${ax + 260},${(ay + cy) / 2} ${cx},${cy}` }, $('#flight'));
+  const flightPath = el('path', {}, $('#flight'));
+  function drawFlight(to) {
+    const [ax, ay] = P(byId.auckland.at), [cx, cy] = P(byId[to].at);
+    flightPath.setAttribute('d', `M${ax},${ay} Q${(ax + cx) / 2 + 200},${(ay + cy) / 2} ${cx},${cy}`);
+  }
 
   // ---------- Pins ----------
   const pinEls = {};
@@ -544,8 +547,18 @@ a { color: var(--accent); text-underline-offset: 2px; }
     loop().items.forEach(it => {
       if (it.drive) el('path', { d: line(it.drive.map(n => NODES[n])), pathLength: 1, class: it.side ? 'side' : '' }, g);
     });
+    drawFlight(loop().flyTo || 'christchurch');
     const on = new Set([...loopStops(), 'auckland']);
     for (const id in pinEls) pinEls[id].classList.toggle('off', !on.has(id));
+  }
+
+  function zoomToLoop() {
+    const pts = loop().items.flatMap(it => it.drive ? it.drive.map(n => P(NODES[n])) : []);
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), pad = 40;
+    // Don't zoom in past the point where the simplified coastline starts to look blocky
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    const w = Math.max(Math.max(...xs) - Math.min(...xs) + pad * 2, 300), h = Math.max(Math.max(...ys) - Math.min(...ys) + pad * 2, 300);
+    animateTo(fit(cx - w / 2, cy - h / 2, w, h, focusY()));
   }
 
   function hoverStep(id, on) {
@@ -576,7 +589,7 @@ a { color: var(--accent); text-underline-offset: 2px; }
       <p class="loopsum"><em>${esc(l.length)}</em>${esc(l.summary)}</p>
       <ol class="steps">
         <li>${stopButton('auckland', '2–3 days', 'Start here and get over the jet lag')}</li>
-        <li class="leg fly">${ICON_PLANE} Fly to Christchurch, about 1 hr 20 min</li>`;
+        <li class="leg fly">${ICON_PLANE} ${esc(l.fly || 'Fly to Christchurch, about 1 hr 20 min')}</li>`;
     l.items.forEach(it => {
       if (it.stop) html += `<li class="${it.side ? 'side-stop' : ''}">${stopButton(it.stop, it.nights, it.note)}</li>`;
       else html += `<li class="leg">${ICON_CAR} ${it.side ? 'Out and back, ' : ''}${esc(it.t)}${it.via ? ` via <button class="via" data-id="${it.via}">${esc(byId[it.via].name)}</button>` : ''}</li>`;
@@ -590,7 +603,7 @@ a { color: var(--accent); text-underline-offset: 2px; }
     body.innerHTML = html;
     body.querySelectorAll('[data-loop]').forEach(b => b.onclick = () => {
       loopId = b.dataset.loop; try { localStorage.setItem('nz-loop', loopId); } catch (e) {}
-      drawRoute(); renderRoute();
+      drawRoute(); renderRoute(); zoomToLoop();
     });
     wireIds();
     $('#handleTitle').textContent = l.name;
@@ -608,7 +621,7 @@ a { color: var(--accent); text-underline-offset: 2px; }
   function renderPlace(id) {
     const p = byId[id];
     const stops = loopStops(), i = stops.indexOf(id);
-    const prev = i > 0 ? stops[i - 1] : null, next = i >= 0 && i < stops.length - 1 ? stops[i + 1] : (id === 'auckland' ? 'christchurch' : null);
+    const prev = i > 0 ? stops[i - 1] : null, next = i >= 0 && i < stops.length - 1 ? stops[i + 1] : (id === 'auckland' ? stops[0] : null);
     const island = p.island === 'north' ? 'North Island' : 'South Island';
     const hasPicks = p.things.some(t => t.pick);
     const things = p.things.filter(t => !picksOnly || t.pick);

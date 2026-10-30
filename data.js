@@ -5,7 +5,7 @@
 window.NODES = {
   chc: [172.64, -43.53], waipara: [172.75, -43.06], cheviot: [173.27, -42.81], kaik: [173.68, -42.40],
   clarence: [173.93, -42.17], ward: [174.13, -41.83], blen: [173.95, -41.51], havelock: [173.77, -41.28],
-  nelson: [173.28, -41.27], mapua: [173.10, -41.25], motueka: [173.01, -41.11], kaiteriteri: [173.02, -41.04], marahau: [173.00, -41.00],
+  nelson: [173.28, -41.27], mapua: [173.10, -41.25], motueka: [173.01, -41.11], kaiteriteri: [173.02, -41.04], ngatimoti: [172.90, -41.20], mtarthur: [172.70, -41.20], marahau: [173.00, -41.00],
   takakahill: [172.87, -41.03], takaka: [172.81, -40.86], tapawera: [172.82, -41.39], murch: [172.33, -41.80],
   inang: [171.95, -41.86], westport: [171.60, -41.75], puna: [171.33, -42.11], grey: [171.21, -42.45],
   hoki: [170.97, -42.72], ross: [170.81, -42.90], harihari: [170.56, -43.15], franz: [170.18, -43.39],
@@ -573,6 +573,24 @@ window.LOOPS = [
       { stop: 'fairlie', nights: 'Pie stop' },
       { drive: ['fairlie', 'geraldine', 'ashburton', 'chc'], t: 'about 2¼ hrs' },
       { stop: 'christchurch', note: 'Last night, fly home' },
+    ],
+  },
+  {
+    id: 'wedding', name: 'Just the wedding', length: 'About a week', flyTo: 'mapua', fly: 'Fly to Nelson, about 1 hr',
+    summary: 'For guests here mainly for the wedding: fly from Auckland to Nelson and explore the top of the South Island. Beaches, Abel Tasman, Golden Bay and a mountain, all within 2 hrs of Māpua.',
+    items: [
+      { stop: 'mapua', nights: '3–4 nights', note: 'Land in Nelson and pick up a car. Wedding: Saturday 21 November' },
+      { drive: ['nelson', 'mapua', 'motueka', 'kaiteriteri'], t: 'about 40 min from Māpua' },
+      { stop: 'kaiteriteri', nights: '1 night' },
+      { drive: ['kaiteriteri', 'marahau'], t: 'about 15 min' },
+      { stop: 'abeltasman', nights: 'A day' },
+      { drive: ['marahau', 'motueka', 'takakahill', 'takaka'], t: 'about 1¼ hrs' },
+      { stop: 'goldenbay', nights: '1–2 nights' },
+      { drive: ['takaka', 'takakahill', 'motueka'], t: 'about 1 hr back to Motueka' },
+      { drive: ['motueka', 'ngatimoti', 'mtarthur'], t: 'about 1 hr each way', side: true },
+      { stop: 'mtarthur', nights: 'Day trip', side: true },
+      { drive: ['motueka', 'mapua', 'nelson'], t: 'about 45 min' },
+      { stop: 'mapua', note: 'Fly home from Nelson' },
     ],
   },
 ];
